@@ -1,0 +1,6 @@
+# Keep shared source files consistent on Linux and Windows
+* text=auto
+*.cpp text eol=lf
+*.h text eol=lf
+*.sh text eol=lf
+*.ps1 text eol=crlf
