@@ -1,0 +1,13 @@
+# Do not commit local build and test products
+mayday404
+*.exe
+*.obj
+*.o
+*.pdb
+*.ilk
+.vs/
+Debug/
+Release/
+
+# Scores are local run-time output
+data/leaderboard.txt
