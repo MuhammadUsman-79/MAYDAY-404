@@ -6,9 +6,9 @@
 using namespace std;
 
 struct Flight{
-    string callSign , airCraftType , airLine , origin , destination;
+    string callSign , aircraftType , airline , origin , destination;
     string currentSector , assignedRunway;
-    int passengersCount , remaningFuel;
+    int passengerCount , fuel;
     int arrivalTick , priorityLevel;
     int incidentTick;
     int travelProgress;
@@ -16,8 +16,8 @@ struct Flight{
     Flight* next;
 
     Flight(){
-        passengersCount = 0;
-        remaningFuel = 12;
+        passengerCount = 0;
+        fuel = 12;
         arrivalTick = 0;
         priorityLevel = 9;
         cleared = false;
@@ -40,23 +40,22 @@ struct Crew{
 };
 
 //setting a flight to manual values
-Flight BasicNewFlight(string id , string sector , string runway , int fuel , int priority , int tick){
+Flight BasicNewFlight(string id , string sector , string runway , int fuelAmount , int priority , int time){
     Flight f;
     f.callSign = id;
-    f.airCraftType = "B-747";
-    f.airLine = "PIA";
+    f.aircraftType = "B-747";
+    f.airline = "PIA";
     f.origin = "Karachi";
     f.destination = "Iran";
-    f.passengersCount = 67;
-    f.remaningFuel = fuel;
+    f.passengerCount = 67;
+    f.fuel = fuelAmount;
     f.currentSector = sector;
     f.assignedRunway = runway;
     f.priorityLevel = priority;
-    f.arrivalTick = tick;
+    f.arrivalTick = time;
 
     return f; 
 }
-
 
 
 #endif
