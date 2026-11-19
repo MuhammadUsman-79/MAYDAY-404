@@ -1,8 +1,7 @@
 #ifndef REGISTRY_H
 #define REGISTRY_H
-#include "Flight.h"
+#include "flight.h"
 
-// First version: a linked flight list. Hash lookup is added next.
 class Registration
 {
     Flight* first;
