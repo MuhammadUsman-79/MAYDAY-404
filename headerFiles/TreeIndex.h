@@ -16,3 +16,71 @@ struct TreeNode
         h = 1;
     }
 };
+
+class FlightBST
+{
+    TreeNode* root;
+    TreeNode* add(TreeNode* n, Flight* f)
+    {
+        if(n == NULL) return new TreeNode(f);
+        if(f->callSign < n->flight->callSign) n->left = add(n->left,f);
+        else if(f->callSign > n->flight->callSign) n->right = add(n->right,f);
+        return n;
+    }
+    TreeNode* remove(TreeNode* n, string id)
+    {
+        if(n == NULL) return NULL;
+        if(id < n->flight->callSign) n->left = remove(n->left,id);
+        else if(id > n->flight->callSign) n->right = remove(n->right,id);
+        else
+        {
+            if(n->left == NULL || n->right == NULL)
+            {
+                TreeNode* child = n->left == NULL ? n->right : n->left;
+                delete n;
+                return child;
+            }
+            TreeNode* p = n->right;
+            while(p->left != NULL) p = p->left;
+            n->flight = p->flight;
+            n->right = remove(n->right,p->flight->callSign);
+        }
+        return n;
+    }
+    int getHeight(TreeNode* n)
+    {
+        if(n == NULL) return 0;
+        int a=getHeight(n->left), b=getHeight(n->right);
+        return 1+(a>b?a:b);
+    }
+    void show(TreeNode* n)
+    {
+        if(n == NULL) return;
+        show(n->left);
+        cout << n->flight->callSign << " ";
+        show(n->right);
+    }
+    void clear(TreeNode* n)
+    {
+        if(n==NULL) return;
+        clear(n->left); clear(n->right); delete n;
+    }
+public:
+    FlightBST() { root=NULL; }
+    ~FlightBST() { clear(root); }
+    void insert(Flight* f) { if(f!=NULL) root=add(root,f); }
+    void erase(string id) { root=remove(root,id); }
+    Flight* search(string id)
+    {
+        TreeNode* p=root;
+        while(p!=NULL)
+        {
+            if(id==p->flight->callSign) return p->flight;
+            p=id<p->flight->callSign?p->left:p->right;
+        }
+        return NULL;
+    }
+    int height() { return getHeight(root); }
+    void inorderTraversal() { show(root); cout << endl; }
+};
+#endif
