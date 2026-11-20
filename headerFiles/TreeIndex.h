@@ -83,4 +83,7 @@ public:
     int height() { return getHeight(root); }
     void inorderTraversal() { show(root); cout << endl; }
 };
+
+// AVL with basic left and right rotations after insertion/removal.
+
 #endif
