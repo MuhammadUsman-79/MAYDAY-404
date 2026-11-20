@@ -168,6 +168,9 @@ class FlightAVL
             if(n==NULL) return;
             clear(n->left); clear(n->right); delete n;
         }
+    public:
+        FlightAVL() { root=NULL; }
+        ~FlightAVL() { clear(root); }
 
 };
 #endif
