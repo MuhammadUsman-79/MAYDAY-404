@@ -85,10 +85,7 @@ public:
 };
 
 // AVL with basic left and right rotations after insertion/removal.
-class FlightAVL
-{
-    class FlightAVL
-    {
+class FlightAVL{
         TreeNode* root;
         int h(TreeNode* n) { return n==NULL?0:n->h; }
         void fix(TreeNode* n)
