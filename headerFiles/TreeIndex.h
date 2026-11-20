@@ -171,6 +171,19 @@ class FlightAVL
     public:
         FlightAVL() { root=NULL; }
         ~FlightAVL() { clear(root); }
-
+        void insert(Flight* f) { if(f!=NULL) root=add(root,f); }
+        void erase(string id) { root=remove(root,id); }
+        int height() { return h(root); }
+        Flight* search(string id)
+        {
+            TreeNode* p=root;
+            while(p!=NULL)
+            {
+                if(id==p->flight->callSign) return p->flight;
+                p=id<p->flight->callSign?p->left:p->right;
+            }
+            return NULL;
+        }
+        void inorderTraversal() { show(root); cout<<endl; }
 };
 #endif
