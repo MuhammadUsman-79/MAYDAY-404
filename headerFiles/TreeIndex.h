@@ -85,5 +85,8 @@ public:
 };
 
 // AVL with basic left and right rotations after insertion/removal.
+class FlightAVL
+{
 
+};
 #endif
