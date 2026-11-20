@@ -115,5 +115,59 @@ class FlightAVL
             fix(x); fix(y);
             return y;
         }
+        TreeNode* balanceNode(TreeNode* n)
+        {
+            if(n==NULL) return NULL;
+            fix(n);
+            if(balance(n)>1)
+            {
+                if(balance(n->left)<0) n->left=rotateLeft(n->left);
+                return rotateRight(n);
+            }
+            if(balance(n)<-1)
+            {
+                if(balance(n->right)>0) n->right=rotateRight(n->right);
+                return rotateLeft(n);
+            }
+            return n;
+        }
+        TreeNode* add(TreeNode* n, Flight* f)
+        {
+            if(n==NULL) return new TreeNode(f);
+            if(f->callSign<n->flight->callSign) n->left=add(n->left,f);
+            else if(f->callSign>n->flight->callSign) n->right=add(n->right,f);
+            return balanceNode(n);
+        }
+        TreeNode* remove(TreeNode* n, string id)
+        {
+            if(n==NULL) return NULL;
+            if(id<n->flight->callSign) n->left=remove(n->left,id);
+            else if(id>n->flight->callSign) n->right=remove(n->right,id);
+            else
+            {
+                if(n->left==NULL || n->right==NULL)
+                {
+                    TreeNode* c=n->left==NULL?n->right:n->left;
+                    delete n;
+                    return c;
+                }
+                TreeNode* p=n->right;
+                while(p->left!=NULL) p=p->left;
+                n->flight=p->flight;
+                n->right=remove(n->right,p->flight->callSign);
+            }
+            return balanceNode(n);
+        }
+        void show(TreeNode* n)
+        {
+            if(n==NULL) return;
+            show(n->left); cout<<n->flight->callSign<<" "; show(n->right);
+        }
+        void clear(TreeNode* n)
+        {
+            if(n==NULL) return;
+            clear(n->left); clear(n->right); delete n;
+        }
+
 };
 #endif
