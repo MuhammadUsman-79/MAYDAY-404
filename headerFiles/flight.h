@@ -57,5 +57,4 @@ Flight BasicNewFlight(string id , string sector , string runway , int fuelAmount
     return f; 
 }
 
-
 #endif
