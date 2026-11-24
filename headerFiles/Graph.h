@@ -164,4 +164,148 @@ public:
     }
 };
 
+class RadarSweep{
+
+    SpaceGraph& graph;
+    bool visited[MAX_SECTORS];
+    
+    void dfs(int i){
+        visited[i] = true;
+        cout << graph.sectorName(i) << " ";
+        for(RoadNode* p=graph.neighbors(i); p!=nullptr; p=p->next){
+            if(p->cost > 0 && !visited[p->to])
+                dfs(p->to);
+        }
+    }
+
+public:
+    RadarSweep(SpaceGraph& g): graph(g){}
+
+    //using simple array as queue
+    int bfsFrom(string source){
+        int start = graph.sectorId(source);
+        if(start < 0){
+            cout << "[ATC Error !!] Unknown Sector !!\n";
+                return 0;
+        }
+        for(int i = 0; i < MAX_SECTORS; i++){
+            visited[i] = false;
+        }
+        
+        int q[MAX_SECTORS];
+        int dist[MAX_SECTORS];
+        int front = 0, rear = 0;
+        
+        for(int i = 0; i < MAX_SECTORS; i++){
+            dist[i] = -1;
+        }
+
+        q[rear++] = start;
+        visited[start] = true;
+        dist[start] = 0;
+
+        cout << "BFS From " << source << ":" << endl;
+
+        while(front < rear){
+            int here = q[front++];
+            cout << "Hop " << dist[here] << ": " << graph.sectorName(here) << endl;
+            
+            for(RoadNode* p=graph.neighbors(here); p!=nullptr; p=p->next){
+                if(p->cost > 0 && !visited[p->to]){
+                    visited[p->to] = true;
+                    dist[p->to] = dist[here] + 1;
+                    q[rear++] = p->to;
+                }
+            }
+        
+        }
+        cout << "Visited: " << rear << endl;
+        return rear;
+    }
+
+    void dfsFrom(string source){
+        int start = graph.sectorId(source);
+        if(start < 0){
+            cout << "[ATC Error !!] Unknown Sector !!" << endl;
+            return;
+        }
+        for(int i = 0; i < MAX_SECTORS; i++){
+            visited[i] = false;
+        }
+        cout << "DFS: ";
+        dfs(start);
+        cout << "\n";
+    }
+
+    bool isReachable(string from , string to){
+        int a = graph.sectorId(from);
+        int b = graph.sectorId(to);
+
+        if(a < 0 || b < 0)
+            return false;
+        
+        bool seen[MAX_SECTORS] = {false};
+        int q[MAX_SECTORS];
+        int front = 0 , rear = 0;
+        q[rear++] = a;
+        seen[a] = true;
+
+        while(front < rear){
+            int here = q[front++];
+            if(here == b)
+                return true;
+
+            for(RoadNode* p=graph.neighbors(here); p!=nullptr; p=p->next){
+                if(p->cost > 0 && !seen[p->to]){
+                    if(p->cost > 0 && !seen[p->to]){
+                        seen[p->to] = true;
+                        q[rear++] = p->to;
+                    }
+                }
+            }
+        }
+        return false;    
+    }
+
+    bool searchMissingFlight(string lastKnown){
+        return isReachable("Control Tower" , lastKnown);
+    }
+
+    void withinTwoHops(){
+        int start = graph.sectorId("Control Tower");
+        if(start < 0)
+            return;
+
+        int dist[MAX_SECTORS];
+        int q[MAX_SECTORS];
+        int front = 0 , rear = 0;
+
+        for(int i = 0; i < MAX_SECTORS; i++){
+            dist[i] = -1;
+        }
+
+        dist[start] = 0;
+        q[rear++] = start;
+
+        cout << "Sector within 2 Hops of Control Tower: " << endl;
+
+        while(front < rear){
+            int a = q[front++];
+
+            cout << graph.sectorName(a) << " (" << dist[a] << ")" << endl;
+            if(dist[a] == 2)
+                continue;
+                
+            for(RoadNode* p=graph.neighbors(a); p!=nullptr; p=p->next){
+                if(p->cost > 0 && dist[p->to] == -1){
+                    dist[p->to] = dist[a] + 1;
+                    q[rear++] = p->to;
+                }
+            }    
+        }
+    }
+    
+};
+
+
 #endif
