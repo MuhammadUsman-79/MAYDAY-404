@@ -308,4 +308,161 @@ public:
 };
 
 
+struct Route{
+    int nodes[MAX_SECTORS];
+    int size, cost;
+    bool found;
+    Route(){ 
+        size=0; 
+        cost=0; 
+        found = false; 
+    }
+};
+
+struct DistItem { 
+    int node;
+    int dist; 
+};
+class DistanceHeap{
+    DistItem data[2000];
+    int size;
+public:
+    DistanceHeap(){ 
+        size = 0; 
+    }
+    void push(int node,int dist){
+        if(size>=2000) 
+            return;
+
+        int i=size++;
+        data[i].node=node; 
+        data[i].dist=dist;
+        
+        while(i>0){
+            int p = (i-1) / 2;
+            if(data[p].dist<=data[i].dist) 
+                break;
+
+            DistItem t = data[p];
+            data[p] = data[i];
+            data[i] = t;
+            i = p;
+        }
+    }
+    bool pop(DistItem& item){
+        if(size==0) 
+            return false;
+        item = data[0];
+        data[0] = data[--size];
+        int i = 0;
+
+        while(true){
+            int a = i*2+1;
+            int b = i*2+2;
+            int best = i;
+            if(a<size&&data[a].dist<data[best].dist)
+                best = a;
+
+            if(b<size&&data[b].dist<data[best].dist)
+                best = b;
+
+            if(best == i)
+                break;
+
+            DistItem t = data[i];
+            data[i] = data[best];
+            data[best] = t;
+            i = best;
+        }
+        return true;
+    }
+};
+
+class RouteFinder{
+    SpaceGraph& graph;
+
+public:
+    RouteFinder(SpaceGraph& g):graph(g) {}
+    // Dijkstra: heap chooses thee smallest tentative distance parent[] restores the route
+    Route findFastestRoute(string from , string to){
+        Route result;
+        int start=graph.sectorId(from);
+        int end=graph.sectorId(to);
+
+        if(start < 0 || end < 0) 
+            return result;
+
+        int dist[MAX_SECTORS];
+        int parent[MAX_SECTORS];
+
+        for(int i = 0; i < MAX_SECTORS; i++){
+            dist[i] = BIG_DIST;
+            parent[i] = -1; 
+        }
+
+        DistanceHeap h;
+        dist[start] = 0;
+        h.push(start , 0);
+
+        DistItem item;
+
+        while(h.pop(item)){
+            if(item.dist != dist[item.node]) 
+                continue;
+
+            if(item.node == end) 
+                break;
+
+            for(int j = 0; j < graph.getSectorCount(); j++){
+                int w = graph.getWeight(item.node , j);
+
+                if(w > 0 && dist[item.node]+w < dist[j]){
+                    dist[j] = dist[item.node] + w;
+                    parent[j] = item.node;
+                    h.push(j , dist[j]);
+                }
+            }
+        }
+
+        if(dist[end] == BIG_DIST) 
+            return result;
+
+        result.found = true;
+        result.cost = dist[end];
+
+        int reverse[MAX_SECTORS];
+        int n=0
+        ;
+        for(int p = end; p != -1; p=parent[p]) 
+            reverse[n++] = p;
+
+        result.size = n;
+
+        for(int i = 0; i < n; i++) 
+            result.nodes[i] = reverse[n-1-i];
+
+        return result;
+    }
+    void printRoute(Route r){
+        if(!r.found){
+             cout << "No route found." << endl;
+            return; 
+        }
+        for(int i = 0; i < r.size; i++){
+            if(i == 0)
+                cout << ":";
+            else    
+                cout << "->";
+
+            cout << graph.sectorName(r.nodes[i]);
+        }            
+        
+        cout << " total cost : " << r.cost << " ticks" << endl;
+        cout << "Parent pointer trace : " << endl;
+
+        for(int i=1;i<r.size;i++)
+            cout << graph.sectorName(r.nodes[i]) << " <- " << graph.sectorName(r.nodes[i-1]) << endl;
+    }
+};
+
 #endif
