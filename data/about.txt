@@ -1,0 +1,12 @@
+======================================
+MayDay-404 - Console ATC Simulator
+======================================
+Team G8, CS 3E
+Abdul Subhan  - 25F-0538 (registry, BST, AVL)
+Ali Javed    - 25F-0578 (dispatch, history, game loop)
+Muhammad Usman - 25F-0523 (graph, routes, persistence)
+
+University semester project for Data Structures.
+A flight/airspace simulation using custom linked lists,
+queues, heaps, trees, hashing and graphs.
+======================================

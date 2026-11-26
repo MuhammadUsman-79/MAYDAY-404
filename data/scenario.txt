@@ -1,0 +1,14 @@
+Tick|EventType|Target
+4|Spawn|BB-104
+5|Hijack|BB-876
+8|Spawn|BB-108
+9|Cyber|Syntax Sector (West)
+12|Spawn|BB-112
+12|Fuel|BB-437
+16|Spawn|BB-116
+18|Missing|PK404
+20|Spawn|BB-120
+24|Spawn|BB-124
+25|War|NA-640
+25|War|NA-429
+28|Spawn|BB-128
