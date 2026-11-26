@@ -465,4 +465,128 @@ public:
     }
 };
 
+struct MSTEdge{ 
+    int a;
+    int b;
+    int cost;
+};
+class RadarMST{
+    SpaceGraph& graph;
+    MSTEdge chosen[MAX_SECTORS];
+    int count;
+    int totalCost;
+    int root[MAX_SECTORS];
+
+    int findSet(int i){
+        if(root[i] == i)
+            return i;
+
+        root[i] = findSet(root[i]);
+
+        return root[i];
+    }
+
+    void join(int a , int b){
+         root[findSet(a)] = findSet(b); 
+    }
+
+public:
+    RadarMST(SpaceGraph& g):graph(g){
+         count = totalCost = 0; 
+    }
+    // Kruskal uses simple insertion sort
+    void computeMST(){
+        MSTEdge all[500];
+        int n = 0;
+        int sectors = graph.getSectorCount();
+
+        for(int i = 0; i < sectors; i++)
+            for(int j = i + 1; j < sectors; j++){
+            int w = graph.getWeight(i , j);
+            if(w>0) { 
+                all[n].a = i; 
+                all[n].b = j; 
+                all[n].cost = w; 
+                n++; 
+            }
+        }
+        for(int i=1;i<n;i++){
+            MSTEdge x = all[i];
+
+            int j = i - 1;
+            while(j >= 0 && all[j].cost > x.cost) {
+                 all[j+1] = all[j];
+                 j--; 
+            }
+            all[j+1] = x;
+        }
+        for(int i = 0; i < sectors; i++)
+            root[i] = i;
+
+        count = totalCost=0;
+        
+        for(int i = 0; i < n; i++){
+            if(findSet(all[i].a) != findSet(all[i].b)){
+                join(all[i].a , all[i].b);
+                chosen[count++]=all[i];
+                totalCost+=all[i].cost;
+            }
+        }
+    }
+    void displayMST(){
+        if (count == 0)
+            computeMST();
+            
+        cout << "Minimum radar coverage edges:" << endl;
+
+        for (int i = 0; i < count; i++)
+            cout << graph.sectorName(chosen[i].a) << " -- " << graph.sectorName(chosen[i].b) << " : " << chosen[i].cost << endl;
+        cout << "Total cost: " << totalCost << endl;
+        if (count != graph.getSectorCount() - 1)
+            cout << "Warning: graph disconnected." << endl;
+    }
+    // Each edge in a tree is a bridge
+    bool verifyConnectivity(){
+        if (count == 0)
+            computeMST();
+            
+        if (count != graph.getSectorCount() - 1)
+            return false;
+
+        for (int removed = 0; removed < count; removed++){
+            bool seen[MAX_SECTORS] = {false};
+            int q[MAX_SECTORS];
+            int front = 0, rear = 0;
+            seen[0] = true;
+            q[rear++] = 0;
+            while (front < rear){
+    
+                int here = q[front++];
+
+                for (int j = 0; j < count; j++){
+                    if (j == removed)
+                        continue;
+
+                    int next = -1;
+
+                    if (chosen[j].a == here)
+                        next = chosen[j].b;
+                    else if (chosen[j].b == here)
+                        next = chosen[j].a;
+                    if (next != -1 && !seen[next]){
+                        seen[next] = true;
+                        q[rear++] = next;
+                    }
+                }
+            }
+            cout << "Without edge " << graph.sectorName(chosen[removed].a) << " -- " << graph.sectorName(chosen[removed].b);
+                 cout << ": visited " << rear << "/" << graph.getSectorCount() << endl;
+                 
+            if (rear == graph.getSectorCount())
+                return false;
+        }
+        return true;
+    }
+};
+
 #endif
